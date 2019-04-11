@@ -1,6 +1,7 @@
 package com.ramostear.application.controller;
 
 import com.ramostear.application.model.FileInfo;
+import com.ramostear.application.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -25,9 +26,16 @@ import java.util.Map;
 @Controller
 public class FileController {
 
+    private static String fileUploadRootDir = null;
 
-    @Value ( "${file.upload.root.dir}" )
-    String fileUploadRootDir;
+    @Value ( "${file.upload.root.dir.windows}" )
+    String fileUploadRootDirWindows;
+
+    @Value ( "${file.upload.root.dir.mac}" )
+    String fileUploadRootDirMac;
+
+    @Value ( "${file.upload.root.dir.linux}" )
+    String fileUploadRootDirLinux;
 
     private static Map<String,FileInfo> fileRepository = new HashMap<>();
 
@@ -39,6 +47,20 @@ public class FileController {
         fileRepository.put ( file1.getName (),file1 );
         fileRepository.put ( file2.getName (),file2 );
         fileRepository.put ( file3.getName (),file3 );
+
+        // 判断文件夹是否存在，不存在就创建
+        String osName = System.getProperty("os.name");
+        if (osName.startsWith("Mac OS")) {
+            // 苹果
+            fileUploadRootDir = fileUploadRootDirMac;
+        } else if (osName.startsWith("Windows")) {
+            // windows
+            fileUploadRootDir = fileUploadRootDirWindows;
+        } else {
+            // unix or linux
+            fileUploadRootDir = fileUploadRootDirLinux;
+        }
+        FileUtil.createDirectories(fileUploadRootDir);
     }
 
     @GetMapping("/files")
