@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,13 +91,14 @@ public class FileController {
 
     @GetMapping("/download/{fileName}")
     @ResponseBody
-    public ResponseEntity<Object> downloadFile(@PathVariable(name = "fileName") String fileName) throws FileNotFoundException {
+    public ResponseEntity<Object> downloadFile(@PathVariable(name = "fileName") String fileName) throws FileNotFoundException, UnsupportedEncodingException {
 
         File file = new File ( fileUploadRootDir+fileName);
         InputStreamResource resource = new InputStreamResource ( new FileInputStream ( file ) );
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add ( "Content-Disposition",String.format("attachment;filename=\"%s",fileName));
+        // 使用URLEncoder.encode(fileName, "UTF-8") 下载文件能正常显示中文
+        headers.add ( "Content-Disposition",String.format("attachment;filename=\"%s", URLEncoder.encode(fileName, "UTF-8")));
         headers.add ( "Cache-Control","no-cache,no-store,must-revalidate" );
         headers.add ( "Pragma","no-cache" );
         headers.add ( "Expires","0" );
