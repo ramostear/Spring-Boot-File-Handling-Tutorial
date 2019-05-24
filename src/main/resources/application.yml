@@ -1,0 +1,19 @@
+spring:
+  freemarker:
+    cache: false
+    charset: UTF-8
+    enabled: true
+    prefix: ''
+    suffix: .html
+    template-loader-path: classpath:/templates/
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
+file:
+  upload:
+    root:
+      dir:
+        linux: ~/upload/
+        mac: /users/gaohanghang/upload/
+        windows: C:/work/upload/
